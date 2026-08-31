@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Mi Peso</title>
+    <link rel="stylesheet" href="styleLogReg.css">
+    <script src="auth.js" defer></script>
+</head>
+<body>
+    <main>
+        <section class="card" style="max-width: 600px; margin: 40px auto;">
+            <div id="loginForm">
+                <h2>Iniciar Sesión</h2>
+
+                <form action="/login" method="post" >
+                    <label>
+                        Nombre de usuario
+                        <input type="text" name="username" required>
+                    </label>
+                    <label>
+                        Contraseña
+                        <input type="password" name="password" required>
+                    </label>
+                    
+                    <button type="submit" style="margin-top: 15px;">Entrar</button>
+                </form>
+
+                <div id="mensajeError" style="color: #dc2626; margin-top: 15px; display: none; font-weight: bold;">
+                    Usuario o contraseña incorrectos.
+                </div>
+
+                <div id="mensajeLogout" style="color: #16a34a; margin-top: 15px; display: none; font-weight: bold;">
+                    Has cerrado sesión correctamente.
+                </div>
+
+                <p style="margin-top: 20px; text-align: center;">
+                    ¿No tienes cuenta? <a href="/registro.html">Regístrate aquí</a>
+                </p>    
+            </div>
+            
+        </section>
+    </main>
+</body>
+</html>

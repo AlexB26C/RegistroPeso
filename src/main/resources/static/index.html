@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- En el <head> de tus HTML -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="theme-color" content="#121314">
+    <link rel="manifest" href="/manifest.json">
+    <title>Mi Peso - Control de Evolución</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+    <nav id="header-usuario">
+        <h2>Hola, <strong id="nombreUsuario">Cargando...</strong></h2>
+        <div>
+            <a href="perfil.html" id="btn-perfil">⚙️ Ver Mi Perfil</a>
+            <a href="/logout" id="btn-cerrar-sesion">Cerrar Sesión</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 🟢 Tarjeta 1: Gráfica -->
+        <section class="card">
+            <h3>Gráfica de evolución</h3>
+            <div class="grafica-contenedor">
+                <canvas id="graficaPeso"></canvas>
+            </div>
+        </section>
+
+        <!-- 🟢 Tarjeta 2: Formulario -->
+        <section class="card">
+            <h3>Añadir registro</h3>
+            
+            <form id="formulario">
+                <label for="fecha">
+                    Fecha
+                    <input id="fecha" type="date" required>
+                </label>
+
+                <label for="pesoKg">
+                    Peso en kg
+                    <input id="pesoKg" type="number" min="20" max="400" step="0.1" placeholder="Ej. 70.5" required>
+                </label>
+
+                <label for="nota">
+                    Nota
+                    <input id="nota" type="text" maxlength="500" placeholder="Opcional (ej. En ayunas)">
+                </label>
+
+                <button type="submit">Guardar peso</button>
+            </form>
+
+            <p id="mensaje"></p>
+        </section>
+
+        <!-- 🟢 Tarjeta 3: Historial con contenedor para scroll interno -->
+        <section class="card">
+            <h3>Historial</h3>
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Peso</th>
+                            <th>Nota</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaRegistros"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

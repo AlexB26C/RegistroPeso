@@ -30,7 +30,7 @@ body {
     padding: 20px;
 }
 
-#registroForm, #loginForm {
+#registroForm, #estilosForm {
     background-color: rgba(18, 19, 20, 0.95);
     font-family: 'Roboto', sans-serif;
     padding: 40px;

@@ -11,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -61,9 +60,9 @@ public class RegistroPesoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actulizarRegistro(@PathVariable Long id,
-                                               @RequestBody RegistroPeso datosActualizados,
-                                               Authentication authentication) {
+    public ResponseEntity<?> actualizarRegistro(@PathVariable Long id,
+                                                @Valid @RequestBody RegistroPeso datosActualizados,
+                                                Authentication authentication) {
         Optional<RegistroPeso> registroOpt = registroPesoRepository.findById(id);
 
         if (registroOpt.isEmpty()) {

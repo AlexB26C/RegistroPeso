@@ -136,6 +136,20 @@ async function cargarUsuarioActual() {
     }
 }
 
+async function obtenerTokenCSRF() {
+    const respuesta = await fetch('/api/auth/csrf');
+
+    if (!respuesta.ok) {
+        throw new Error('No se puedo obtener el token CSRF');
+    }
+
+    const  datos = await respuesta.json();
+
+    return datos.token;
+}
+
+
+
 // --- ACCIONES DE TABLA (ELIMINAR Y EDITAR) ---
 async function eliminarRegistro(id) {
     if (!confirm('¿Seguro que quieres eliminar este registro de peso?')) {
@@ -143,14 +157,23 @@ async function eliminarRegistro(id) {
     }
 
     try {
-        const respuesta = await fetch(`/api/registros/${id}`, { method: 'DELETE' });
+        const token = await obtenerTokenCSRF();
+
+        const respuesta = await fetch(`/api/registros/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-XSRF-TOKEN': token
+            }
+        });
         if (respuesta.ok) {
             cargarRegistros();
         } else {
+            console.error('Error al eliminar:', respuesta.status);
             alert('Error al eliminar el registro');
         }
     } catch (error) {
         console.error('Error:', error);
+        alert('Error al eliminar el registro');
     }
 }
 
@@ -216,9 +239,11 @@ if (formulario) {
         const url = idEdicion ? `/api/registros/${idEdicion}` : '/api/registros';
         const metodo = idEdicion ? 'PUT' : 'POST';
 
+        const  token = await obtenerTokenCSRF();
+
         const respuesta = await fetch(url, {
             method: metodo,
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "X-XSRF-TOKEN": token },
             body: JSON.stringify(datosRegistro)
         });
 

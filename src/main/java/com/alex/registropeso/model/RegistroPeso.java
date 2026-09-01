@@ -2,8 +2,7 @@ package com.alex.registropeso.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import org.springframework.boot.autoconfigure.web.WebProperties;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,13 +17,17 @@ public class RegistroPeso {
 
     @NotNull
 
+    @PastOrPresent(message = "La fecha no puede ser futura")
     @Column(nullable = false)
     private LocalDate fecha;
 
     @NotNull
+    @DecimalMin(value = "20.0", message = "El peso debe ser como mínimo 20 kg")
+    @DecimalMax(value = "400.0", message = "El peso debe ser como máximo 400 kg")
     @Column(nullable = false, precision = 5, scale = 2)
     private BigDecimal pesoKg;
 
+    @Size(max = 500, message = "La nota no puede superar los 500 caracteres")
     @Column(length = 500)
     private String nota;
 

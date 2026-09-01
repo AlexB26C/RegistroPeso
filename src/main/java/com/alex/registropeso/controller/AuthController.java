@@ -1,5 +1,6 @@
 package com.alex.registropeso.controller;
 
+import com.alex.registropeso.dto.ObjetivoRequest;
 import com.alex.registropeso.dto.RegistroRequest;
 import com.alex.registropeso.model.Usuario;
 import com.alex.registropeso.repository.UsuarioRepository;
@@ -10,8 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.parser.Entity;
-import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
@@ -40,25 +39,31 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Map<String, String>> obtenerUsuarioActual(Authentication authentication){
+    public ResponseEntity<Map<String, Object>> obtenerUsuarioActual(Authentication authentication){
         if (authentication == null || !authentication.isAuthenticated()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        return ResponseEntity.ok(Map.of("username", authentication.getName()));
-    }
-
-    @PutMapping("/objetivo")
-    public ResponseEntity<?> actualizarObjetivo(@RequestBody Map<String, BigDecimal> payload,
-                                                Authentication authentication){
-        if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         Usuario usuario = usuarioRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        BigDecimal nuevoObjetivo = payload.get("pesoObjetivo");
-        usuario.setPesoObjetivo(nuevoObjetivo);
+        Map<String, Object> datos = new java.util.HashMap<>();
+        datos.put("username", authentication.getName());
+        datos.put("pesoObjetivo", usuario.getPesoObjetivo());
+        return ResponseEntity.ok(datos);
+    }
+
+    @PutMapping("/objetivo")
+    public ResponseEntity<?> actualizarObjetivo(@Valid @RequestBody ObjetivoRequest request,
+                                                Authentication authentication){
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Usuario usuario = usuarioRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        usuario.setPesoObjetivo(request.getPesoObjetivo());
         usuarioRepository.save(usuario);
 
         return ResponseEntity.ok(usuario);

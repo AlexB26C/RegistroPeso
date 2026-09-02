@@ -35,7 +35,7 @@ public class ProgresoService {
                         new RuntimeException("No hay registros de peso"));
 
         RegistroPeso ultimoRegistro = registroPesoRepository
-                .findFirstByUsuarioIdOrderByFechaDesc(usuarioId)
+                .findFirstByUsuarioIdOrderByFechaDescIdDesc(usuarioId)
                 .orElseThrow(() ->
                         new RuntimeException("No hay registros de peso"));
 
@@ -43,46 +43,70 @@ public class ProgresoService {
         BigDecimal pesoActual = ultimoRegistro.getPesoKg();
         BigDecimal pesoObjetivo = usuario.getPesoObjetivo();
 
+        System.out.println("===== DATOS PROGRESO =====");
+        System.out.println("Peso inicial: " + pesoInicial);
+        System.out.println("Peso actual: " + pesoActual);
+        System.out.println("Peso objetivo: " + pesoObjetivo);
+        System.out.println("==========================");
+
         if (pesoObjetivo == null) {
             throw new RuntimeException("El usuario no tiene un peso objetivo");
         }
 
-
-        System.out.println("========== PROGRESO ==========");
-System.out.println("Usuario: " + username);
-System.out.println("Peso inicial: " + pesoInicial);
-System.out.println("Peso actual: " + pesoActual);
-System.out.println("Peso objetivo: " + pesoObjetivo);
-System.out.println("==============================");
-
         BigDecimal progreso;
 
+        // Ya estamos en el objetivo
         if (pesoInicial.compareTo(pesoObjetivo) == 0) {
+
             progreso = BigDecimal.valueOf(100);
+
         } else {
-            BigDecimal pesoPerdido = pesoInicial.subtract(pesoActual);
 
-            BigDecimal pesoTotal = pesoInicial.subtract(pesoObjetivo);
+            BigDecimal progresoCalculado;
 
-            progreso = pesoPerdido.divide(pesoTotal,2, RoundingMode.HALF_UP)
-                    .multiply(BigDecimal.valueOf(100));
+            // Objetivo mayor: queremos GANAR peso
+            if (pesoObjetivo.compareTo(pesoInicial) > 0) {
 
-            progreso = progreso.setScale(2, RoundingMode.HALF_UP);
+                BigDecimal pesoGanado = pesoActual.subtract(pesoInicial);
+                BigDecimal pesoTotal = pesoObjetivo.subtract(pesoInicial);
+
+                progresoCalculado = pesoGanado
+                        .divide(pesoTotal, 4, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100));
+
+                // Objetivo menor: queremos PERDER peso
+            } else {
+
+                BigDecimal pesoPerdido = pesoInicial.subtract(pesoActual);
+                BigDecimal pesoTotal = pesoInicial.subtract(pesoObjetivo);
+
+                progresoCalculado = pesoPerdido
+                        .divide(pesoTotal, 4, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100));
+            }
+
+            progreso = progresoCalculado.setScale(2, RoundingMode.HALF_UP);
         }
 
+        // Nunca menos de 0%
         if (progreso.compareTo(BigDecimal.ZERO) < 0) {
             progreso = BigDecimal.ZERO;
         }
 
+        // Nunca más de 100%
         BigDecimal cien = BigDecimal.valueOf(100);
 
         if (progreso.compareTo(cien) > 0) {
             progreso = cien;
         }
 
-        System.out.println("Progreso calculado: " + progreso);
-        
-        return new ProgresoDTO(pesoInicial, pesoActual, pesoObjetivo, progreso);
+        System.out.println("PROGRESO CALCULADO: " + progreso);
 
+        return new ProgresoDTO(
+                pesoInicial,
+                pesoActual,
+                pesoObjetivo,
+                progreso
+        );
     }
 }

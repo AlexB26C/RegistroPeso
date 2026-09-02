@@ -228,9 +228,50 @@ async function cargarRegistros() {
         }
 
         mostrarGrafica(registros);
+        actualizarResumenDashboard(registros);
 
     } catch (error) {
         console.error('Error al cargar registros:', error);
+    }
+}
+
+// --- RESUMEN DEL DASHBOARD (peso actual, variación, media 7 días, objetivo) ---
+function actualizarResumenDashboard(registros) {
+    const pesoActualEl = document.getElementById('perfilPesoActual');
+    const variacionEl = document.getElementById('perfilVariacion');
+    const mediaEl = document.getElementById('perfilMedia');
+    const objetivoEl = document.getElementById('perfilPesoObjetivo');
+
+    if (!registros || registros.length === 0) {
+        if (pesoActualEl) pesoActualEl.textContent = '-';
+        if (variacionEl) variacionEl.textContent = '-';
+        if (mediaEl) mediaEl.textContent = '-';
+    } else {
+        const ordenados = [...registros].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+        const ultimo = ordenados[ordenados.length - 1];
+        const actual = Number(ultimo.pesoKg);
+
+        if (pesoActualEl) {
+            pesoActualEl.textContent = `${actual.toFixed(1)} kg`;
+        }
+
+        if (ordenados.length > 1) {
+            const penultimo = ordenados[ordenados.length - 2];
+            const dif = actual - Number(penultimo.pesoKg);
+            const signo = dif > 0 ? '+' : '';
+            if (variacionEl) variacionEl.textContent = `${signo}${dif.toFixed(1)} kg`;
+        } else if (variacionEl) {
+            variacionEl.textContent = '-';
+        }
+
+        const ultimos7 = ordenados.slice(-7).map(r => Number(r.pesoKg));
+        const media = ultimos7.reduce((total, peso) => total + peso, 0) / ultimos7.length;
+        if (mediaEl) mediaEl.textContent = `${media.toFixed(1)} kg`;
+    }
+
+    if (objetivoEl) {
+        const objetivo = Number(pesoObjetivoActual);
+        objetivoEl.textContent = (!isNaN(objetivo) && objetivo > 0) ? `${objetivo.toFixed(1)} kg` : '-';
     }
 }
 
@@ -304,9 +345,207 @@ async function cargarProgreso() {
     }
 }
 
+// --- NAVEGACIÓN ENTRE VISTAS (tabbar arriba/abajo + swipe) ---
+function iniciarNavegacionVistas() {
+
+    const vistas = document.querySelectorAll('.vista');
+    const tabs = document.querySelectorAll('.tab-link');
+    const contenedorVistas = document.querySelector('main.vistas');
+    const tabbar = document.getElementById('tabbar');
+    const indicador = tabbar?.querySelector('.tab-indicator');
+
+    if (!vistas.length || !tabs.length || !contenedorVistas || !indicador) {
+        return;
+    }
+
+
+    // ---------------------------------------------------------
+    // INDICADOR
+    // ---------------------------------------------------------
+
+ function actualizarIndicador(progreso) {
+    const cantidad = tabs.length;
+
+    if (cantidad === 0) return;
+
+    // Índice de la pestaña actual
+    const indice = Math.floor(progreso);
+
+    // Evitamos salirnos del array
+    const indiceActual = Math.max(
+        0,
+        Math.min(indice, cantidad - 1)
+    );
+
+    const indiceSiguiente = Math.min(
+        indiceActual + 1,
+        cantidad - 1
+    );
+
+    const tabActual = tabs[indiceActual];
+    const tabSiguiente = tabs[indiceSiguiente];
+
+    if (!tabActual || !tabSiguiente) return;
+
+    // Punto de inicio de la barra:
+    // aproximadamente en el centro de cada pestaña
+    const xActual =
+        tabActual.offsetLeft +
+        (tabActual.offsetWidth / 2) - 10;
+
+    const xSiguiente =
+        tabSiguiente.offsetLeft +
+        (tabSiguiente.offsetWidth / 2) - 10;
+
+    // Progreso entre la pestaña actual y la siguiente
+    const progresoLocal =
+        progreso - indiceActual;
+
+    const x =
+        xActual +
+        (xSiguiente - xActual) * progresoLocal;
+
+    // La barra tiene un tamaño pequeño y fijo
+    indicador.style.width = '20px';
+
+    indicador.style.transform =
+        `translateX(${x}px)`;
+}
+
+
+    // ---------------------------------------------------------
+    // CALCULAR POSICIÓN INICIAL
+    // ---------------------------------------------------------
+
+    function actualizarIndicadorDesdeScroll() {
+
+        const anchoVista = contenedorVistas.clientWidth;
+
+        if (!anchoVista) return;
+
+        const progreso =
+            contenedorVistas.scrollLeft / anchoVista;
+
+        actualizarIndicador(progreso);
+    }
+
+
+    // ---------------------------------------------------------
+    // SWIPE / SCROLL
+    // ---------------------------------------------------------
+
+    let rafPendiente = false;
+
+    contenedorVistas.addEventListener('scroll', () => {
+
+        if (rafPendiente) return;
+
+        rafPendiente = true;
+
+        requestAnimationFrame(() => {
+
+            actualizarIndicadorDesdeScroll();
+
+            rafPendiente = false;
+
+        });
+
+    }, { passive: true });
+
+
+    // ---------------------------------------------------------
+    // INTERSECTION OBSERVER
+    // ---------------------------------------------------------
+
+    const observer = new IntersectionObserver((entries) => {
+
+        entries.forEach(entry => {
+
+            if (entry.isIntersecting) {
+
+                const id = entry.target.id;
+
+                tabs.forEach(tab => {
+
+                    tab.classList.toggle(
+                        'active',
+                        tab.getAttribute('href') === '#' + id
+                    );
+
+                });
+
+            }
+
+        });
+
+    }, {
+        root: contenedorVistas,
+        threshold: 0.6
+    });
+
+
+    vistas.forEach(vista => {
+        observer.observe(vista);
+    });
+
+
+    // ---------------------------------------------------------
+    // CLICK EN LOS TABS
+    // ---------------------------------------------------------
+
+    tabs.forEach(tab => {
+
+        tab.addEventListener('click', (e) => {
+
+            e.preventDefault();
+
+            const destino =
+                document.querySelector(
+                    tab.getAttribute('href')
+                );
+
+            if (destino) {
+
+                destino.scrollIntoView({
+                    behavior: 'smooth',
+                    inline: 'start',
+                    block: 'nearest'
+                });
+
+            }
+
+        });
+
+    });
+
+
+    // ---------------------------------------------------------
+    // POSICIÓN INICIAL
+    // ---------------------------------------------------------
+
+    requestAnimationFrame(() => {
+        actualizarIndicadorDesdeScroll();
+    });
+
+
+    // ---------------------------------------------------------
+    // RECALCULAR SI CAMBIA EL TAMAÑO DE PANTALLA
+    // ---------------------------------------------------------
+
+    window.addEventListener('resize', () => {
+
+        requestAnimationFrame(() => {
+            actualizarIndicadorDesdeScroll();
+        });
+
+    });
+
+}
+
 // --- INICIALIZACIÓN ---
 async function iniciarApp() {
     ponerFechaHoy();
+    iniciarNavegacionVistas();
     await cargarUsuarioActual();
     await cargarRegistros();
     await cargarProgreso()

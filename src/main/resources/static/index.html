@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- En el <head> de tus HTML -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <meta name="theme-color" content="#121314">
@@ -16,73 +15,155 @@
 
     <nav id="header-usuario">
         <h2>Hola, <strong id="nombreUsuario">Cargando...</strong></h2>
-        <div>
-            <a href="perfil.html" id="btn-perfil">⚙️ Ver Mi Perfil</a>
-            <a href="/logout" id="btn-cerrar-sesion">Cerrar Sesión</a>
+            
         </div>
     </nav>
 
-    <main>
-        <!-- 🟢 Tarjeta 1: Gráfica -->
-        <section class="card">
-            <h3>Gráfica de evolución</h3>
-            <div class="grafica-contenedor">
-                <canvas id="graficaPeso"></canvas>
+    <!-- 🟢 NAV DE VISTAS: se reposiciona por CSS (arriba en desktop, abajo en móvil) -->
+    <nav class="tabbar" id="tabbar">
+        <a href="#vista-dashboard" class="tab-link" data-vista="dashboard">
+            <span class="tab-icon">📊</span><span class="tab-label">Resumen</span>
+        </a>
+        <a href="#vista-registro" class="tab-link" data-vista="registro">
+            <span class="tab-icon">📝</span><span class="tab-label">Registro</span>
+        </a>
+        <a href="#vista-grafica" class="tab-link" data-vista="grafica">
+            <span class="tab-icon">📈</span><span class="tab-label">Gráfica</span>
+        </a>
+        <a href="#vista-perfil" class="tab-link" data-vista="perfil">
+            <span class="tab-icon">⚙️</span><span class="tab-label">Perfil</span>
+        </a>
+
+        <div class="tab-indicator" id="tab-indicator"></div>
+    </nav>
+
+    <main class="vistas">
+
+        <!-- 🟢 VISTA 1: DASHBOARD / RESUMEN -->
+        <section id="vista-dashboard" class="vista">
+            <div class="vista-grid">
+                <section class="card card-perfil card-resumen">
+                    <h3>📊 Resumen de Datos</h3>
+                    <div class="grid-resumen">
+                        <div class="stat-box">
+                            <small>Peso Actual</small>
+                            <p id="perfilPesoActual">-</p>
+                        </div>
+                        <div class="stat-box">
+                            <small>Variación</small>
+                            <p id="perfilVariacion">-</p>
+                        </div>
+                        <div class="stat-box">
+                            <small>Media (7 días)</small>
+                            <p id="perfilMedia">-</p>
+                        </div>
+                        <div class="stat-box">
+                            <small>Peso Objetivo</small>
+                            <p id="perfilPesoObjetivo">-</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="progress-container">
+                    <label for="file-progress">Progreso hacia tu objetivo</label>
+                    <div class="progress-wrapper">
+                        <progress id="file-progress" value="0" max="100"></progress>
+                    </div>
+                    <span id="progress-text">0%</span>
+                </section>
             </div>
         </section>
 
-        <!-- 🟢 Tarjeta 2: Formulario -->
-        <section class="card">
-            <h3>Añadir registro</h3>
-            
-            <form id="formulario">
-                <label for="fecha">
-                    Fecha
-                    <input id="fecha" type="date" required>
-                </label>
+        <!-- 🟢 VISTA 2: AÑADIR REGISTRO + HISTORIAL -->
+        <section id="vista-registro" class="vista">
+            <div class="vista-grid vista-grid-registro">
+                <section class="card">
+                    <h3>Añadir registro</h3>
+                    <form id="formulario">
+                        <label for="fecha">
+                            Fecha
+                            <input id="fecha" type="date" required>
+                        </label>
 
-                <label for="pesoKg">
-                    Peso en kg
-                    <input id="pesoKg" type="number" min="20" max="400" step="0.1" placeholder="Ej. 70.5" required>
-                </label>
+                        <label for="pesoKg">
+                            Peso en kg
+                            <input id="pesoKg" type="number" min="20" max="400" step="0.1" placeholder="Ej. 70.5" required>
+                        </label>
 
-                <label for="nota">
-                    Nota
-                    <input id="nota" type="text" maxlength="500" placeholder="Opcional (ej. En ayunas)">
-                </label>
+                        <label for="nota">
+                            Nota
+                            <input id="nota" type="text" maxlength="500" placeholder="Opcional (ej. En ayunas)">
+                        </label>
 
-                <button type="submit">Guardar peso</button>
-            </form>
+                        <button type="submit">Guardar peso</button>
+                    </form>
 
-            <p id="mensaje"></p>
-        </section>
+                    <p id="mensaje"></p>
+                </section>
 
-        <!-- 🟢 Tarjeta 3: Historial con contenedor para scroll interno -->
-        <section class="card">
-            <h3>Historial</h3>
-            <div class="tabla-contenedor">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Peso</th>
-                            <th>Nota</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="listaRegistros"></tbody>
-                </table>
+                <section class="card card-historial">
+                    <h3>Historial</h3>
+                    <div class="tabla-contenedor">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Peso</th>
+                                    <th>Nota</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listaRegistros"></tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
         </section>
-        <section class="progress-container">
-            <label for="file-progress">Progreso hacia tu objetivo</label>
 
-            <div class="progress-wrapper">
-                <progress id="file-progress" value="0" max="100"></progress>
+        <!-- 🟢 VISTA 3: GRÁFICA -->
+        <section id="vista-grafica" class="vista">
+            <div class="vista-grid">
+                <section class="card card-grafica-grande">
+                    <h3>Gráfica de evolución</h3>
+                    <div class="grafica-contenedor">
+                        <canvas id="graficaPeso"></canvas>
+                    </div>
+                </section>
             </div>
-
-            <span id="progress-text">0%</span>
         </section>
+
+        <section id="vista-perfil" class="vista">
+            <div class="vista-grid">
+                <section class="card card-perfil">
+                    <h3>🎯 Peso Objetivo</h3>
+                    <form id="formObjetivo" class="form-objetivo" onsubmit="event.preventDefault();">
+                        <label for="inputObjetivo">
+                            Meta en kg
+                            <input type="number" id="inputObjetivo" step="0.1" placeholder="Ej: 75.0" min="20" max="400">
+                        </label>
+                        <button type="button" id="btnGuardarObjetivo">Guardar Objetivo 💾</button>
+                    </form>
+                </section>
+
+                <section class="card card-perfil tarjeta-cuenta">
+                    <h3>👤 Datos de la Cuenta</h3>
+
+                    <div class="datos-cuenta">
+                        <p><strong>Usuario:</strong> <span id="nombreUsuarioPerfil">-</span></p>
+                    </div>
+
+                    <form action="/logout" method="post" class="form-logout">
+                        <button type="submit" id="btn-cerrar-sesion">
+                            Cerrar Sesión
+                        </button>
+                    </form>
+                </section>
+
+                
+  
+            </div>
+        </section>
+
     </main>
 
 </body>

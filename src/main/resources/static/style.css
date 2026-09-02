@@ -53,8 +53,8 @@ body {
     margin-right: 8px;
 }
 
-/* 🟢 CENTRADO ABSOLUTO Y GRID DE CONTENIDO */
-main, .main-perfil {
+/* 🟢 CENTRADO ABSOLUTO Y GRID DE CONTENIDO (perfil.html) */
+.main-perfil {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
@@ -65,6 +65,155 @@ main, .main-perfil {
     padding: 24px;
     align-content: center;
     color: white;
+}
+
+/* 🟢 NAV DE VISTAS (tabbar): abajo tipo app en móvil, arriba tipo nav normal en desktop */
+.tabbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    background-color: rgba(18, 19, 20, 0.97);
+    border-top: 1px solid #474747;
+    padding: 6px 0;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom));
+    z-index: 20;
+}
+
+.tab-link {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 4px 0;
+}
+
+.tab-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.tab-link.active {
+    color: #ffffff;
+}
+
+.tab-link.active .tab-icon {
+    filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.7));
+}
+
+.tab-indicator {
+    position: absolute;
+    width: 20px;
+    height: 3px;
+    bottom: 4px;
+    left: 0;
+    background: #ffffff;
+    border-radius: 3px;
+    pointer-events: none;
+}
+
+/* 🟢 CONTENEDOR DE VISTAS: scroll horizontal con snap = swipe nativo */
+main.vistas {
+    flex: 1;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4.2rem; /* deja hueco para el tabbar fijo abajo en móvil */
+}
+
+.vista {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.vista-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    color: white;
+}
+
+.vista-grid-registro {
+    grid-template-columns: 1fr;
+}
+
+/* Dentro de las vistas dejamos que las tarjetas crezcan según su contenido,
+   en vez del alto fijo de 300px que usa el dashboard de perfil.html */
+.vistas .card,
+.vistas .card-perfil {
+    height: auto;
+    min-height: 260px;
+}
+
+.card-resumen .grid-resumen {
+    min-height: 200px;
+}
+
+.card-historial {
+    min-height: 320px;
+}
+
+.card-grafica-grande {
+    min-height: 420px;
+}
+
+.card-grafica-grande .grafica-contenedor {
+    max-height: 380px;
+}
+
+/* 🟢 DESKTOP: nav de vistas arriba, como un nav normal */
+@media (min-width: 768px) {
+    .tabbar {
+        position: sticky;
+        top: 0;
+        bottom: auto;
+        justify-content: flex-start;
+        gap: 2rem;
+        padding: 0.6rem 2rem;
+        border-top: none;
+        border-bottom: 1px solid #474747;
+    }
+
+    .tab-indicator {
+        bottom: 0;
+    }
+
+    .tab-link {
+        flex: none;
+        flex-direction: row;
+        gap: 6px;
+        font-size: 0.85rem;
+    }
+
+    .tab-icon {
+        font-size: 1rem;
+    }
+
+    main.vistas {
+        padding-bottom: 0;
+    }
+
+    .vista-grid-registro {
+        grid-template-columns: minmax(280px, 360px) 1fr;
+        align-items: start;
+    }
 }
 
 /* 🟢 TARJETAS BASE CON TAMAÑO FIJO Y EQUILIBRADO */
@@ -225,7 +374,7 @@ table {
 th {
     position: sticky;
     top: 0;
-    background-color: rgba(18, 19, 20, 0.95);
+    background-color: rgba(18, 19, 20, 0.15);
     color: #ffffff;
     z-index: 1;
     font-weight: bold;
@@ -253,8 +402,13 @@ th, td {
 }
 
 /* 🟢 RESPONSIVE */
+.main-perfil-config {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+}
+
 @media (max-width: 992px) {
-    main, .main-perfil {
+    .main-perfil {
         grid-template-columns: 1fr;
         margin: 20px auto;
     }
@@ -276,17 +430,22 @@ th, td {
 
 
 .progress-container {
+    grid-column: 1 / -1;
+    padding: 18px 22px;
+    background-color: rgba(18, 19, 20, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     width: 100%;
-    max-width: 600px;
-    margin: 25px auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .progress-container label {
-    display: block;
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #333;
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    color: #ffffff;
 }
 
 .progress-wrapper {
@@ -330,9 +489,30 @@ th, td {
 /* Porcentaje encima de la barra */
 #progress-text {
     display: block;
-    text-align: center;
+    text-align: right;
     margin-top: 8px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: #0072ff;
+}
+
+.tarjeta-cuenta {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-logout {
+    margin-top: auto;
+}
+
+#btn-cerrar-sesion {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #ef4444;
+    color: #ffffff;
+    font-weight: bold;
+    cursor: pointer;  
+    transition: background-color 0.2s ease;
+    width: 100%;
 }

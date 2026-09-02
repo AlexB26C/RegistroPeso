@@ -75,8 +75,8 @@ button {
     padding: 11px;
     border: 0;
     border-radius: 7px;
-    background: white;
-    color: #000000;
+    background: #2563eb;
+    color: white;
     font: inherit;
     font-weight: bold;
     cursor: pointer;
@@ -84,7 +84,7 @@ button {
 }
 
 button:hover {
-    background: #c0c0c0;
+    background: #1d4ed8;
 }
 
 p {

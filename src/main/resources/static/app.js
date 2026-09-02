@@ -8,6 +8,8 @@ const progressBar = document.getElementById('file-progress');
 const progressText = document.getElementById('progress-text')
 
 let graficaPeso;
+let graficaIMC = null;
+let alturaActual = null;
 let pesoObjetivoActual = null;
 let idEdicion = null;
 
@@ -112,6 +114,283 @@ function mostrarGrafica(registros) {
     });
 }
 
+// --- MEDIDOR SEMICIRCULAR DEL IMC ---
+function mostrarGraficaIMC(registros) {
+
+    const canvas = document.getElementById('graficaIMC');
+    const valorEl = document.getElementById('imcValor');
+    const estadoEl = document.getElementById('imcEstado');
+
+    if (!canvas) return;
+
+    if (
+        !registros ||
+        registros.length === 0 ||
+        !alturaActual ||
+        !isFinite(alturaActual) ||
+        alturaActual <= 0
+    ) {
+        if (valorEl) valorEl.textContent = '-';
+        if (estadoEl) estadoEl.textContent = 'Sin datos';
+        return;
+    }
+
+    const ordenados = [...registros].sort(
+        (a, b) => new Date(a.fecha) - new Date(b.fecha)
+    );
+
+    const ultimoRegistro = ordenados[ordenados.length - 1];
+
+    const peso = Number(ultimoRegistro.pesoKg);
+    const alturaMetros = Number(alturaActual) / 100;
+
+    if (
+        !isFinite(peso) ||
+        !isFinite(alturaMetros) ||
+        alturaMetros <= 0
+    ) {
+        return;
+    }
+
+    const imc = peso / (alturaMetros * alturaMetros);
+    const imcRedondeado = Number(imc.toFixed(1));
+
+    let estado;
+
+    if (imc < 18.5) {
+        estado = 'Bajo peso';
+    } else if (imc < 25) {
+        estado = 'Peso normal';
+    } else if (imc < 30) {
+        estado = 'Sobrepeso';
+    } else {
+        estado = 'Obesidad';
+    }
+
+    if (valorEl) {
+        valorEl.textContent = imcRedondeado.toFixed(1);
+    }
+
+    if (estadoEl) {
+        estadoEl.textContent = estado;
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    const rect = canvas.getBoundingClientRect();
+
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+
+    ctx.scale(dpr, dpr);
+
+    const width = rect.width;
+    const height = rect.height;
+
+    const centroX = width / 2;
+    const centroY = height * 0.88;
+
+    const radio = Math.min(
+        width * 0.40,
+        height * 0.75
+    );
+
+    const grosor = 28;
+
+    const inicio = Math.PI;
+    const fin = Math.PI * 2;
+
+    // Rango visual del medidor
+    const minimo = 15;
+    const maximo = 35;
+
+    function posicionIMC(valor) {
+
+        const limitado = Math.max(
+            minimo,
+            Math.min(valor, maximo)
+        );
+
+        const porcentaje =
+            (limitado - minimo) /
+            (maximo - minimo);
+
+        return inicio + porcentaje * Math.PI;
+    }
+
+
+    // ================================================
+    // 🔴 ROJO: < 17
+    // ================================================
+
+    ctx.beginPath();
+
+    ctx.arc(
+        centroX,
+        centroY,
+        radio,
+        posicionIMC(15),
+        posicionIMC(17)
+    );
+
+    ctx.lineWidth = grosor;
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineCap = 'butt';
+    ctx.stroke();
+
+
+    // ================================================
+    // 🟡 AMARILLO: 17 - 18.5
+    // ================================================
+
+    ctx.beginPath();
+
+    ctx.arc(
+        centroX,
+        centroY,
+        radio,
+        posicionIMC(17),
+        posicionIMC(18.5)
+    );
+
+    ctx.lineWidth = grosor;
+    ctx.strokeStyle = '#eab308';
+    ctx.stroke();
+
+
+    // ================================================
+    // 🟢 VERDE: 18.5 - 25
+    // ================================================
+
+    ctx.beginPath();
+
+    ctx.arc(
+        centroX,
+        centroY,
+        radio,
+        posicionIMC(18.5),
+        posicionIMC(25)
+    );
+
+    ctx.lineWidth = grosor;
+    ctx.strokeStyle = '#22c55e';
+    ctx.stroke();
+
+
+    // ================================================
+    // 🟡 AMARILLO: 25 - 30
+    // ================================================
+
+    ctx.beginPath();
+
+    ctx.arc(
+        centroX,
+        centroY,
+        radio,
+        posicionIMC(25),
+        posicionIMC(30)
+    );
+
+    ctx.lineWidth = grosor;
+    ctx.strokeStyle = '#eab308';
+    ctx.stroke();
+
+
+    // ================================================
+    // 🔴 ROJO: 30 - 35
+    // ================================================
+
+    ctx.beginPath();
+
+    ctx.arc(
+        centroX,
+        centroY,
+        radio,
+        posicionIMC(30),
+        posicionIMC(35)
+    );
+
+    ctx.lineWidth = grosor;
+    ctx.strokeStyle = '#ef4444';
+    ctx.stroke();
+
+
+    // ================================================
+    // AGUJA
+    // ================================================
+
+    const angulo = posicionIMC(imc);
+
+    const agujaLongitud = radio - 8;
+
+    const agujaX =
+        centroX +
+        Math.cos(angulo) * agujaLongitud;
+
+    const agujaY =
+        centroY +
+        Math.sin(angulo) * agujaLongitud;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        centroX,
+        centroY
+    );
+
+    ctx.lineTo(
+        agujaX,
+        agujaY
+    );
+
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+
+    // ================================================
+    // CENTRO DE LA AGUJA
+    // ================================================
+
+    ctx.beginPath();
+
+    ctx.arc(
+        centroX,
+        centroY,
+        9,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+
+
+    // ================================================
+    // VALORES EXTREMOS
+    // ================================================
+
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+
+    ctx.fillText(
+        '15',
+        centroX - radio,
+        centroY + 25
+    );
+
+    ctx.fillText(
+        '35',
+        centroX + radio,
+        centroY + 25
+    );
+}
+
 // --- CARGAR USUARIO Y RECUPERAR SU OBJETIVO ---
 async function cargarUsuarioActual() {
     try {
@@ -131,6 +410,11 @@ async function cargarUsuarioActual() {
             if (valorObjetivo !== null && valorObjetivo !== undefined && valorObjetivo !== '') {
                 pesoObjetivoActual = Number(valorObjetivo);
                 localStorage.setItem('pesoObjetivo', pesoObjetivoActual);
+            }
+
+            const valorAltura = usuario.alturaCm ?? usuario.altura_cm;
+            if (valorAltura !== null && valorAltura !== undefined && valorAltura !== '') {
+                alturaActual = Number(valorAltura);
             }
         }
     } catch (error) {
@@ -228,10 +512,30 @@ async function cargarRegistros() {
         }
 
         mostrarGrafica(registros);
+        mostrarGraficaIMC(registros);
         actualizarResumenDashboard(registros);
 
     } catch (error) {
         console.error('Error al cargar registros:', error);
+    }
+}
+
+async function actualizarGraficaIMC() {
+    try {
+        const respuesta = await fetch('/api/registros');
+
+        if (!respuesta.ok) {
+            console.error('No se pudieron cargar los registros para actualizar el IMC');
+            return;
+        }
+
+        const registros =
+            await respuesta.json();
+
+        mostrarGraficaIMC(registros);
+
+    } catch (error) {
+        console.error('Error al actualizar la gráfica de IMC');
     }
 }
 

@@ -1,5 +1,6 @@
 package com.alex.registropeso.controller;
 
+import com.alex.registropeso.dto.AlturaRequest;
 import com.alex.registropeso.dto.ObjetivoRequest;
 import com.alex.registropeso.dto.RegistroRequest;
 import com.alex.registropeso.model.Usuario;
@@ -50,6 +51,7 @@ public class AuthController {
         Map<String, Object> datos = new java.util.HashMap<>();
         datos.put("username", authentication.getName());
         datos.put("pesoObjetivo", usuario.getPesoObjetivo());
+        datos.put("alturaCm", usuario.getAlturaCm());
         return ResponseEntity.ok(datos);
     }
 
@@ -64,6 +66,23 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         usuario.setPesoObjetivo(request.getPesoObjetivo());
+        usuarioRepository.save(usuario);
+
+        return ResponseEntity.ok(usuario);
+    }
+
+    @PutMapping("/altura")
+    public ResponseEntity<?> actualizarAltura(@Valid @RequestBody AlturaRequest request,
+                                              Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Usuario usuario = usuarioRepository
+                .findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        usuario.setAlturaCm(request.getAlturaCm());
         usuarioRepository.save(usuario);
 
         return ResponseEntity.ok(usuario);

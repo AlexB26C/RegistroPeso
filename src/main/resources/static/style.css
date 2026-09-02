@@ -388,7 +388,7 @@ input:focus {
    ========================================= */
 
 button[type="submit"],
-#btnGuardarObjetivo {
+#btnGuardarObjetivo, #btnGuardarAltura {
     padding: 9px;
 
     margin-top: 4px;
@@ -926,4 +926,34 @@ td {
         padding-top: 48px;
         padding-bottom: 66px;
     }
+}
+
+.card-grafica-imc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.imc-medidor {
+    width: 100%;
+    max-width: 420px;
+    height: 230px;
+    position: relative;
+}
+
+.imc-medidor canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.imc-valor {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-top: -25px;
+}
+
+.imc-estado {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 4px;
 }

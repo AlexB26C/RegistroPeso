@@ -33,6 +33,14 @@ async function cargarUsuarioPerfil() {
 
         const usuario = await respuesta.json();
 
+        const inputAltura = document.getElementById('inputAltura');
+
+        if (usuario.alturaCm !== null && usuario.alturaCm !== undefined && usuario.alturaCm !== '') {
+            if (inputAltura) {
+                inputAltura.value = usuario.alturaCm;
+            }
+        }
+
 
 
         // --------------------------------------------------------
@@ -147,8 +155,6 @@ if (btnGuardarObj) {
                 inputObjetivo
                     ? Number(inputObjetivo.value)
                     : null;
-
-
 
             // ----------------------------------------------------
             // Validación
@@ -316,6 +322,59 @@ if (btnGuardarObj) {
     console.error(
         '❌ No se encontró el botón #btnGuardarObjetivo'
     );
+}
+
+const btnGuardarAltura = document.getElementById('btnGuardarAltura');
+
+if (btnGuardarAltura) {
+    btnGuardarAltura.addEventListener(
+        'click',
+        async () => {
+            const inputAltura = document.getElementById('inputAltura');
+
+            const nuevaAltura = inputAltura ? Number(inputAltura.value) : null;
+
+            if (nuevaAltura === null || !Number.isFinite(nuevaAltura) || nuevaAltura < 50 || nuevaAltura > 250) {
+                alert('Introduce una altura válida entre 50 y 250 cm');
+                return;
+            }
+
+            try {
+                const token = await obtenerTokenCSRF();
+
+                const respuesta = await fetch('/api/auth/altura',
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type' : 'application/json',
+                            'X-XSRF-TOKEN': token
+                        },
+                        body: JSON.stringify({
+                            alturaCm: nuevaAltura
+                        })
+                    }
+                );
+
+                if (!respuesta.ok) {
+                    const errorTexto = await respuesta.text();
+
+                    console.error('Respuesta del servidor:', errorTexto);
+                    throw new Error(`Error HTTP: ${respuesta.status}`);
+                }
+
+                alturaActual = nuevaAltura;
+
+                if(typeof actualizarGraficaIMC === 'function') {
+                    await actualizarGraficaIMC();
+                }
+
+                alert('Altura guardada correctamente')
+            } catch (error) {
+                console.error('Error al guardar la altura:', error);
+                alert('Error al guardar la altura');
+            }
+        }
+    )
 }
 
 

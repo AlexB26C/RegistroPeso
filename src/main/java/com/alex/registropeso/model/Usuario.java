@@ -20,7 +20,12 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "altura_cm", precision = 5, scale = 2)
+    private BigDecimal alturaCm;
+
     private BigDecimal pesoObjetivo;
+
+
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -72,5 +77,13 @@ public class Usuario {
 
     public void setPesoObjetivo(BigDecimal pesoObjetivo) {
         this.pesoObjetivo = pesoObjetivo;
+    }
+
+    public BigDecimal getAlturaCm() {
+        return alturaCm;
+    }
+
+    public void setAlturaCm(BigDecimal alturaCm) {
+        this.alturaCm = alturaCm;
     }
 }

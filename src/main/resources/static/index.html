@@ -62,6 +62,10 @@
                             <small>Peso Objetivo</small>
                             <p id="perfilPesoObjetivo">-</p>
                         </div>
+                        <div class="stat-box">
+                            <small>Altura</small>
+                            <p id="perfilAltura">-</p>
+                        </div>
                     </div>
                 </section>
 
@@ -130,6 +134,14 @@
                         <canvas id="graficaPeso"></canvas>
                     </div>
                 </section>
+                <section class="card card-grafica-imc">
+                    <h3>IMC actual</h3>
+                    <div class="imc-medidor">
+                        <canvas id="graficaIMC"></canvas>
+                    </div>
+                    <div id="imcValor" class="imc-valor"></div>
+                    <div id="imcEstado" class="imc-estado"></div>
+                </section>
             </div>
         </section>
 
@@ -144,6 +156,24 @@
                         </label>
                         <button type="button" id="btnGuardarObjetivo">Guardar Objetivo 💾</button>
                     </form>
+                </section>
+                <section class="card card-perfil">
+                    <h3>📏 Datos físicos</h3>
+
+                    <form id="formAltura" class="form-objetivo" onsubmit="event.preventDefault();">
+                        <label for="inputAltura">
+                            Altura en cm
+                            <input
+                            type="number"
+                            id="inputAltura"
+                            step="1"
+                            min="50"
+                            max="250"
+                            placeholder="Ej: 75.0">
+                        </label>
+                    </form>
+
+                    <button type="button" id="btnGuardarAltura">Guardar altura 💾</button>
                 </section>
 
                 <section class="card card-perfil tarjeta-cuenta">

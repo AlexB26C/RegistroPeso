@@ -1,7 +1,6 @@
 package com.alex.registropeso.controller;
 
 import com.alex.registropeso.dto.ProgresoDTO;
-import com.alex.registropeso.model.Usuario;
 import com.alex.registropeso.service.ProgresoService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;

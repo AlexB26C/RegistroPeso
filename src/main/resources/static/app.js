@@ -5,7 +5,7 @@ const nota = document.getElementById('nota');
 const listaRegistros = document.getElementById('listaRegistros');
 const mensaje = document.getElementById('mensaje');
 const progressBar = document.getElementById('file-progress');
-const progressText = document.getElementById('.progress-text')
+const progressText = document.getElementById('progress-text')
 
 let graficaPeso;
 let pesoObjetivoActual = null;
@@ -168,8 +168,8 @@ async function eliminarRegistro(id) {
             }
         });
         if (respuesta.ok) {
-            cargarRegistros();
-            cargarProgreso();
+            await cargarRegistros();
+            await cargarProgreso();
         } else {
             console.error('Error al eliminar:', respuesta.status);
             alert('Error al eliminar el registro');
@@ -195,6 +195,12 @@ function prepararEdicion(id, fechaVal, pesoVal, notaVal) {
 async function cargarRegistros() {
     try {
         const respuesta = await fetch('/api/registros');
+
+        if (!respuesta.ok) {
+            console.error('No se pudieron cargar los registros');
+            return;
+        }
+
         const registros = await respuesta.json();
 
         if (listaRegistros) {
@@ -266,8 +272,8 @@ if (formulario) {
 
         ponerFechaHoy();
 
-        cargarRegistros();
-        cargarProgreso();
+        await cargarRegistros();
+        await cargarProgreso();
     });
 }
 
@@ -275,24 +281,26 @@ async function cargarProgreso() {
     try {
         const respuesta = await fetch('/api/progreso');
 
-        if (!respuesta.ok) {
-            console.error('No se pudo obtener el progreso');
-            return;
-        }
+        console.log("STATUS:", respuesta.status);
 
         const datos = await respuesta.json();
 
-        const progreso = Number(datos.progreso) || 0;
+        console.log("DATOS RECIBIDOS:", datos);
+        console.log("PROGRESO:", datos.progreso);
+        console.log("BARRA:", progressBar);
+        console.log("TEXTO:", progressText);
 
-        if(progressBar) {
-            progressBar.value = progreso;
-        }
+        const progreso = Number(datos.progreso);
 
-        if (progressText) {
-            progressText.textContent = `${Math.round(progreso)}%`
-        }
+        console.log("PROGRESO COMO NUMBER:", progreso);
+
+        progressBar.value = progreso;
+        progressText.textContent = Math.round(progreso) + '%';
+
+        console.log("VALOR FINAL DE LA BARRA:", progressBar.value);
+
     } catch (error) {
-        console.error('Error al cargar el progreso:', error);
+        console.error("ERROR PROGRESO:", error);
     }
 }
 

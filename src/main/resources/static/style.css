@@ -2,7 +2,8 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     min-height: 100vh;
     margin: 0;
 }
@@ -12,86 +13,87 @@ body {
     color: #1f2937;
     display: flex;
     flex-direction: column;
+
     background-image: url("Gimnasio.jpg");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    background-attachment: fixed; 
+    background-attachment: fixed;
 }
 
-/* 🟢 HEADER DE USUARIO */
-#header-usuario {
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 0.75rem 2rem; 
-    background-color: rgba(18, 19, 20, 0.95);
-    border-bottom: 1px solid #474747;
-    color: #ffffff;   
-}
-
-#header-usuario h2 {
-    margin: 0;
-    font-size: 1.25rem;
-}
 
 #btn-cerrar-sesion {
-    text-decoration: none; 
-    color: #ef4444; 
-    cursor: pointer; 
+    text-decoration: none;
+    color: #ef4444;
+    cursor: pointer;
     font-weight: bold;
+
     padding: 4px 8px;
     border-radius: 4px;
 }
 
-#btn-perfil, #btn-volver-inicio {
-    text-decoration: none; 
-    font-weight: bold; 
-    color: #2563eb;
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-right: 8px;
-}
+/* =========================================
+   PERFIL.HTML
+   ========================================= */
 
-/* 🟢 CENTRADO ABSOLUTO Y GRID DE CONTENIDO (perfil.html) */
 .main-perfil {
     flex: 1;
+
     display: grid;
-    grid-template-columns: repeat(3, 1fr); 
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+
     width: 100%;
     max-width: 1200px;
+
     margin: auto;
     padding: 24px;
+
     align-content: center;
+
     color: white;
 }
 
-/* 🟢 NAV DE VISTAS (tabbar): abajo tipo app en móvil, arriba tipo nav normal en desktop */
+
+/* =========================================
+   NAV DE VISTAS
+   ========================================= */
+
 .tabbar {
     position: fixed;
+
     bottom: 0;
     left: 0;
     right: 0;
+
     display: flex;
     justify-content: space-around;
+
     background-color: rgba(18, 19, 20, 0.97);
     border-top: 1px solid #474747;
+
     padding: 6px 0;
     padding-bottom: calc(6px + env(safe-area-inset-bottom));
-    z-index: 20;
+
+    z-index: 1000;
 }
 
 .tab-link {
     flex: 1;
+
     display: flex;
     flex-direction: column;
     align-items: center;
+
     gap: 2px;
+
     text-decoration: none;
+
     color: #94a3b8;
+
     font-size: 0.65rem;
     font-weight: bold;
+
     padding: 4px 0;
 }
 
@@ -105,48 +107,71 @@ body {
 }
 
 .tab-link.active .tab-icon {
-    filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.7));
+    filter: drop-shadow(
+            0 0 6px rgba(37, 99, 235, 0.7)
+    );
 }
 
 .tab-indicator {
     position: absolute;
+
     width: 20px;
     height: 3px;
+
     bottom: 4px;
     left: 0;
+
     background: #ffffff;
+
     border-radius: 3px;
+
     pointer-events: none;
 }
 
-/* 🟢 CONTENEDOR DE VISTAS: scroll horizontal con snap = swipe nativo */
+
+/* =========================================
+   CONTENEDOR DE VISTAS
+   ========================================= */
+
 main.vistas {
     flex: 1;
+    min-height: 0;
+
     display: flex;
+
     overflow-x: auto;
     overflow-y: hidden;
+
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4.2rem; /* deja hueco para el tabbar fijo abajo en móvil */
-}
 
+    -webkit-overflow-scrolling: touch;
+
+    padding-bottom: 4.2rem;
+}
 .vista {
     flex: 0 0 100%;
+
     scroll-snap-align: start;
     scroll-snap-stop: always;
+
     overflow-y: auto;
+
     box-sizing: border-box;
 }
 
 .vista-grid {
     display: grid;
     grid-template-columns: 1fr;
+
     gap: 20px;
+
     width: 100%;
     max-width: 1200px;
+
     margin: 0 auto;
     padding: 24px;
+
     color: white;
 }
 
@@ -154,8 +179,11 @@ main.vistas {
     grid-template-columns: 1fr;
 }
 
-/* Dentro de las vistas dejamos que las tarjetas crezcan según su contenido,
-   en vez del alto fijo de 300px que usa el dashboard de perfil.html */
+
+/* =========================================
+   TARJETAS DENTRO DE LAS VISTAS
+   ========================================= */
+
 .vistas .card,
 .vistas .card-perfil {
     height: auto;
@@ -178,167 +206,205 @@ main.vistas {
     max-height: 380px;
 }
 
-/* 🟢 DESKTOP: nav de vistas arriba, como un nav normal */
-@media (min-width: 768px) {
-    .tabbar {
-        position: sticky;
-        top: 0;
-        bottom: auto;
-        justify-content: flex-start;
-        gap: 2rem;
-        padding: 0.6rem 2rem;
-        border-top: none;
-        border-bottom: 1px solid #474747;
-    }
 
-    .tab-indicator {
-        bottom: 0;
-    }
+/* =========================================
+   TARJETAS BASE
+   ========================================= */
 
-    .tab-link {
-        flex: none;
-        flex-direction: row;
-        gap: 6px;
-        font-size: 0.85rem;
-    }
-
-    .tab-icon {
-        font-size: 1rem;
-    }
-
-    main.vistas {
-        padding-bottom: 0;
-    }
-
-    .vista-grid-registro {
-        grid-template-columns: minmax(280px, 360px) 1fr;
-        align-items: start;
-    }
-}
-
-/* 🟢 TARJETAS BASE CON TAMAÑO FIJO Y EQUILIBRADO */
-.card, .card-perfil {
+.card,
+.card-perfil {
     padding: 18px 22px;
+
     background-color: rgba(18, 19, 20, 0.95);
+
     border-radius: 12px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+
+    box-shadow:
+            0 4px 14px rgba(0, 0, 0, 0.4);
+
     width: 100%;
-    height: 300px; 
+    height: 300px;
+
     display: flex;
     flex-direction: column;
+
     overflow: hidden;
 }
 
-.card h3, .card-perfil h3 {
+.card h3,
+.card-perfil h3 {
     margin-top: 0;
     margin-bottom: 12px;
+
     font-size: 1rem;
+
     color: #ffffff;
 }
 
-/* 🟢 TARJETA 1 (PERFIL): GRID DE ESTADÍSTICAS Y PESO OBJETIVO (2x2) */
+
+/* =========================================
+   RESUMEN DE ESTADÍSTICAS
+   ========================================= */
+
 .grid-resumen {
     display: grid;
+
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
+
     gap: 10px;
+
     height: 100%;
 }
 
 .stat-box {
     background-color: rgba(30, 32, 35, 0.85);
+
     border: 1px solid rgba(255, 255, 255, 0.1);
+
     border-radius: 8px;
+
     padding: 8px;
+
     display: flex;
     flex-direction: column;
+
     justify-content: center;
     align-items: center;
+
     text-align: center;
 }
 
 .stat-box small {
     color: #94a3b8;
+
     font-size: 0.7rem;
     font-weight: bold;
+
     text-transform: uppercase;
+
     letter-spacing: 0.5px;
 }
 
 .stat-box p {
     font-size: 1.15rem;
     font-weight: bold;
+
     margin: 4px 0 0 0;
+
     color: #ffffff;
 }
 
-/* 🟢 TARJETA 2: FORMULARIO Y DEFINIR OBJETIVO */
-form, .form-objetivo {
+
+/* =========================================
+   FORMULARIOS
+   ========================================= */
+
+form,
+.form-objetivo {
     display: flex;
     flex-direction: column;
+
     gap: 10px;
 }
 
 label {
     display: flex;
     flex-direction: column;
+
     gap: 4px;
+
     font-size: 0.8rem;
     font-weight: bold;
+
     color: #ffffff;
 }
 
 input {
     padding: 8px;
+
     border: 1px solid #475569;
     border-radius: 6px;
+
     background-color: #0f172a;
     color: white;
+
     font: inherit;
     font-size: 0.85rem;
+
     width: 100%;
 }
 
 input:focus {
     outline: none;
+
     border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+
+    box-shadow:
+            0 0 0 2px rgba(37, 99, 235, 0.3);
 }
 
-button[type="submit"], #btnGuardarObjetivo {
+
+/* =========================================
+   BOTONES
+   ========================================= */
+
+button[type="submit"],
+#btnGuardarObjetivo {
     padding: 9px;
+
     margin-top: 4px;
+
     border: 0;
     border-radius: 6px;
+
     background: #2563eb;
     color: #ffffff;
+
     font: inherit;
     font-size: 0.85rem;
     font-weight: bold;
+
     cursor: pointer;
-    transition: background-color 0.2s;
+
+    transition:
+            background-color 0.2s;
+
     width: 100%;
 }
 
-button[type="submit"]:hover, #btnGuardarObjetivo:hover {
+button[type="submit"]:hover,
+#btnGuardarObjetivo:hover {
     background: #1d4ed8;
 }
 
 #mensaje {
     min-height: 14px;
+
     margin-top: 4px;
     margin-bottom: 0;
+
     font-size: 0.75rem;
+
     color: #61ef44;
 }
 
-/* 🟢 TARJETA 3: DATOS DE LA CUENTA */
+
+/* =========================================
+   DATOS DE LA CUENTA
+   ========================================= */
+
 .datos-cuenta {
     background-color: rgba(30, 32, 35, 0.85);
+
     border: 1px solid rgba(255, 255, 255, 0.1);
+
     padding: 14px;
+
     border-radius: 8px;
+
     font-size: 0.9rem;
+
     color: #ffffff;
 }
 
@@ -346,155 +412,211 @@ button[type="submit"]:hover, #btnGuardarObjetivo:hover {
     margin: 0;
 }
 
-/* 🟢 INDEX (GRÁFICA E HISTORIAL) */
+
+/* =========================================
+   GRÁFICA
+   ========================================= */
+
 #graficaPeso {
     color: #ffffff;
 }
 
 .grafica-contenedor {
     position: relative;
+
     flex: 1;
+
     width: 100%;
+
     max-height: 200px;
 }
 
+
+/* =========================================
+   TABLA / HISTORIAL
+   ========================================= */
+
 .tabla-contenedor {
     flex: 1;
+
     overflow-y: auto;
+
     margin-top: 2px;
 }
 
 table {
     width: 100%;
+
     border-collapse: collapse;
+
     font-size: 0.8rem;
+
     color: #ffffff;
 }
 
 th {
     position: sticky;
+
     top: 0;
-    background-color: rgba(18, 19, 20, 0.15);
+
+    background-color: rgba(18, 19, 20, 0.95);
+
     color: #ffffff;
+
     z-index: 1;
+
     font-weight: bold;
 }
 
-th, td {
+th,
+td {
     padding: 5px 4px;
+
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    border-bottom:
+            1px solid rgba(255, 255, 255, 0.1);
+
     color: #ffffff;
 }
 
 .btn-accion {
     border: none;
+
     background: none;
+
     cursor: pointer;
+
     font-size: 0.85rem;
+
     padding: 1px 3px;
+
     border-radius: 4px;
-    transition: background-color 0.2s;
+
+    transition:
+            background-color 0.2s;
 }
 
 .btn-accion:hover {
-    background-color: rgba(43, 45, 48, 0.95);
-}
-
-/* 🟢 RESPONSIVE */
-.main-perfil-config {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 800px;
-}
-
-@media (max-width: 992px) {
-    .main-perfil {
-        grid-template-columns: 1fr;
-        margin: 20px auto;
-    }
-    
-    .card, .card-perfil {
-        height: auto;
-        min-height: 250px;
-    }
-}
-
-@media (max-width: 600px) {
-    #header-usuario {
-        flex-direction: column;
-        gap: 8px;
-        text-align: center;
-    }
+    background-color:
+            rgba(43, 45, 48, 0.95);
 }
 
 
+/* =========================================
+   BARRA DE PROGRESO
+   ========================================= */
 
 .progress-container {
     grid-column: 1 / -1;
+
     padding: 18px 22px;
+
     background-color: rgba(18, 19, 20, 0.95);
+
     border-radius: 12px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+
+    box-shadow:
+            0 4px 14px rgba(0, 0, 0, 0.4);
+
     width: 100%;
+
     display: flex;
     flex-direction: column;
+
     overflow: hidden;
 }
 
 .progress-container label {
     margin-top: 0;
     margin-bottom: 12px;
+
     font-size: 1rem;
+
     color: #ffffff;
 }
 
 .progress-wrapper {
     position: relative;
+
     width: 100%;
     height: 28px;
+
     background: #e9ecef;
+
     border-radius: 50px;
+
     overflow: hidden;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+
+    box-shadow:
+            inset 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
 .progress-wrapper progress {
     width: 100%;
     height: 100%;
+
     appearance: none;
+
     border: none;
+
     display: block;
 }
 
-/* Fondo */
 .progress-wrapper progress::-webkit-progress-bar {
     background: transparent;
+
     border-radius: 50px;
 }
 
-/* Barra de progreso */
 .progress-wrapper progress::-webkit-progress-value {
-    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    background:
+            linear-gradient(
+                    90deg,
+                    #00c6ff,
+                    #0072ff
+            );
+
     border-radius: 50px;
-    transition: width 0.5s ease;
-    box-shadow: 0 0 10px rgba(0, 114, 255, 0.35);
+
+    transition:
+            width 0.5s ease;
+
+    box-shadow:
+            0 0 10px rgba(0, 114, 255, 0.35);
 }
 
 .progress-wrapper progress::-moz-progress-bar {
-    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    background:
+            linear-gradient(
+                    90deg,
+                    #00c6ff,
+                    #0072ff
+            );
+
     border-radius: 50px;
-    transition: width 0.5s ease;
+
+    transition:
+            width 0.5s ease;
 }
 
-/* Porcentaje encima de la barra */
 #progress-text {
     display: block;
+
     text-align: right;
+
     margin-top: 8px;
+
     font-size: 14px;
     font-weight: 700;
+
     color: #0072ff;
 }
+
+
+/* =========================================
+   TARJETA DE CUENTA / LOGOUT
+   ========================================= */
 
 .tarjeta-cuenta {
     display: flex;
@@ -507,12 +629,136 @@ th, td {
 
 #btn-cerrar-sesion {
     padding: 8px 12px;
+
     border: none;
     border-radius: 6px;
+
     background-color: #ef4444;
     color: #ffffff;
+
     font-weight: bold;
-    cursor: pointer;  
-    transition: background-color 0.2s ease;
+
+    cursor: pointer;
+
+    transition:
+            background-color 0.2s ease;
+
     width: 100%;
+}
+
+
+/* =========================================
+   PERFIL RESPONSIVE
+   ========================================= */
+
+.main-perfil-config {
+    grid-template-columns: repeat(2, 1fr);
+
+    max-width: 800px;
+}
+
+
+/* =========================================
+   TABLET
+   ========================================= */
+
+@media (max-width: 992px) {
+
+    .main-perfil {
+        grid-template-columns: 1fr;
+
+        margin: 20px auto;
+    }
+
+    .card,
+    .card-perfil {
+        height: auto;
+
+        min-height: 250px;
+    }
+}
+
+
+/* =========================================
+   MÓVIL
+   ========================================= */
+
+@media (max-width: 600px) {
+
+    #header-usuario {
+        flex-direction: column;
+
+        gap: 8px;
+
+        text-align: center;
+    }
+}
+
+
+/* =========================================
+   DESKTOP
+   ========================================= */
+
+@media (min-width: 768px) {
+
+    .tabbar {
+        position: fixed;
+
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: auto;
+
+        display: flex;
+        justify-content: flex-start;
+
+        gap: 2rem;
+
+        padding: 0.6rem 2rem;
+
+        background-color: rgba(18, 19, 20, 0.97);
+
+        border-top: none;
+        border-bottom: 1px solid #474747;
+
+        z-index: 1000;
+    }
+
+    .tab-indicator {
+        bottom: 0;
+    }
+
+    .tab-link {
+        flex: none;
+
+        flex-direction: row;
+
+        gap: 6px;
+
+        font-size: 0.85rem;
+    }
+
+    .tab-icon {
+        font-size: 1rem;
+    }
+
+    /*
+     * El nav está en position: fixed,
+     * así que reservamos su espacio aquí.
+     */
+    main.vistas {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .vista {
+        padding-top: 48px;
+    }
+
+    .vista-grid-registro {
+        grid-template-columns:
+            minmax(280px, 360px) 1fr;
+
+        align-items: start;
+    }
 }

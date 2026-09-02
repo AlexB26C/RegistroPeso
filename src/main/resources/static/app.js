@@ -322,23 +322,12 @@ async function cargarProgreso() {
     try {
         const respuesta = await fetch('/api/progreso');
 
-        console.log("STATUS:", respuesta.status);
-
         const datos = await respuesta.json();
-
-        console.log("DATOS RECIBIDOS:", datos);
-        console.log("PROGRESO:", datos.progreso);
-        console.log("BARRA:", progressBar);
-        console.log("TEXTO:", progressText);
 
         const progreso = Number(datos.progreso);
 
-        console.log("PROGRESO COMO NUMBER:", progreso);
-
         progressBar.value = progreso;
         progressText.textContent = Math.round(progreso) + '%';
-
-        console.log("VALOR FINAL DE LA BARRA:", progressBar.value);
 
     } catch (error) {
         console.error("ERROR PROGRESO:", error);
@@ -504,15 +493,17 @@ function iniciarNavegacionVistas() {
                     tab.getAttribute('href')
                 );
 
-            if (destino) {
-
-                destino.scrollIntoView({
-                    behavior: 'smooth',
-                    inline: 'start',
-                    block: 'nearest'
-                });
-
+            if (!destino) {
+                return;
             }
+
+            destino.scrollIntoView({
+                behavior: 'smooth',
+                inline: 'start',
+                block: 'nearest'
+            })
+
+
 
         });
 

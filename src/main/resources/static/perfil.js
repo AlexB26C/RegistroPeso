@@ -1,158 +1,97 @@
-let pesoObjetivoActual = null;
+// ============================================================
+// PERFIL.JS
+// ============================================================
 
-// --- CARGAR DATOS DEL USUARIO Y PESO OBJETIVO EN PERFIL ---
+
+// ============================================================
+// CARGAR DATOS DEL USUARIO Y PESO OBJETIVO
+// ============================================================
+
 async function cargarUsuarioPerfil() {
+
     try {
+
+        // Primero intentamos recuperar el objetivo del navegador
         const localObj = localStorage.getItem('pesoObjetivo');
 
         if (localObj) {
             pesoObjetivoActual = Number(localObj);
         }
 
+        // Obtener usuario actual desde el servidor
         const respuesta = await fetch('/api/auth/me');
 
-        if (respuesta.ok) {
-            const usuario = await respuesta.json();
+        if (!respuesta.ok) {
 
-            const objetivoGuardado =
-                usuario.pesoObjetivo ??
-                usuario.peso_objetivo ??
-                localObj;
-
-            const nombreEl = document.getElementById('nombreUsuarioPerfil');
-
-            if (nombreEl) {
-                nombreEl.textContent = usuario.username;
-            }
-
-            if (
-                objetivoGuardado !== null &&
-                objetivoGuardado !== undefined &&
-                objetivoGuardado !== ''
-            ) {
-                pesoObjetivoActual = Number(objetivoGuardado);
-
-                localStorage.setItem(
-                    'pesoObjetivo',
-                    pesoObjetivoActual
-                );
-
-                const inputObj =
-                    document.getElementById('inputObjetivo');
-
-                if (inputObj) {
-                    inputObj.value = pesoObjetivoActual;
-                }
-
-                const perfilPesoObjetivo =
-                    document.getElementById('perfilPesoObjetivo');
-
-                if (perfilPesoObjetivo) {
-                    perfilPesoObjetivo.textContent =
-                        `${pesoObjetivoActual.toFixed(1)} kg`;
-                }
-
-            } else {
-                const perfilPesoObjetivo =
-                    document.getElementById('perfilPesoObjetivo');
-
-                if (perfilPesoObjetivo) {
-                    perfilPesoObjetivo.textContent = '-';
-                }
-            }
-        }
-
-    } catch (error) {
-        console.error('Error al cargar perfil:', error);
-    }
-}
-
-
-// --- GUARDAR PESO OBJETIVO ---
-const btnGuardarObj =
-    document.getElementById('btnGuardarObjetivo');
-
-if (btnGuardarObj) {
-
-    btnGuardarObj.addEventListener('click', async () => {
-
-        const inputObjetivo =
-            document.getElementById('inputObjetivo');
-
-        const nuevoObjetivo =
-            inputObjetivo ? inputObjetivo.value : null;
-
-        // Validación básica
-        if (!nuevoObjetivo || Number(nuevoObjetivo) <= 0) {
-
-            alert(
-                'Por favor, introduce un peso objetivo válido.'
+            console.error(
+                'No se pudo cargar el usuario:',
+                respuesta.status
             );
 
             return;
         }
 
-        // Límite máximo
-        if (Number(nuevoObjetivo) > 400) {
+        const usuario = await respuesta.json();
 
-            alert(
-                'El peso objetivo debe ser menor o igual a 400 kg.'
-            );
 
-            return;
+
+        // --------------------------------------------------------
+        // Nombre de usuario
+        // --------------------------------------------------------
+
+        const nombreEl =
+            document.getElementById('nombreUsuarioPerfil');
+
+        if (nombreEl) {
+            nombreEl.textContent = usuario.username;
         }
 
-        try {
 
-            // Obtener CSRF
-            const respuestaCsrf =
-                await fetch('/api/auth/csrf');
+        // --------------------------------------------------------
+        // Peso objetivo
+        // --------------------------------------------------------
 
-            if (!respuestaCsrf.ok) {
-                throw new Error(
-                    'No se pudo obtener el token CSRF'
-                );
-            }
+        const objetivoGuardado =
+            usuario.pesoObjetivo ??
+            usuario.peso_objetivo ??
+            localObj;
 
-            const csrf =
-                await respuestaCsrf.json();
 
-            // Guardar en servidor
-            const respuesta =
-                await fetch('/api/auth/objetivo', {
-                    method: 'PUT',
+        if (
+            objetivoGuardado !== null &&
+            objetivoGuardado !== undefined &&
+            objetivoGuardado !== ''
+        ) {
 
-                    headers: {
-                        'Content-Type': 'application/json',
-                        [csrf.headerName]: csrf.token
-                    },
-
-                    body: JSON.stringify({
-                        pesoObjetivo: Number(nuevoObjetivo)
-                    })
-                });
-
-            if (!respuesta.ok) {
-
-                throw new Error(
-                    `Error HTTP: ${respuesta.status}`
-                );
-            }
-
-            // Solo actualizamos localStorage
-            // si el servidor ha aceptado el cambio
             pesoObjetivoActual =
-                Number(nuevoObjetivo);
+                Number(objetivoGuardado);
 
+
+            // Guardar también en localStorage
             localStorage.setItem(
                 'pesoObjetivo',
                 pesoObjetivoActual
             );
 
+
+            // ----------------------------------------------------
+            // Input del objetivo
+            // ----------------------------------------------------
+
+            const inputObj =
+                document.getElementById('inputObjetivo');
+
+            if (inputObj) {
+                inputObj.value = pesoObjetivoActual;
+            }
+
+
+            // ----------------------------------------------------
+            // Texto del objetivo en el perfil
+            // ----------------------------------------------------
+
             const perfilPesoObjetivo =
-                document.getElementById(
-                    'perfilPesoObjetivo'
-                );
+                document.getElementById('perfilPesoObjetivo');
 
             if (perfilPesoObjetivo) {
 
@@ -160,29 +99,240 @@ if (btnGuardarObj) {
                     `${pesoObjetivoActual.toFixed(1)} kg`;
             }
 
-            alert(
-                'Peso objetivo guardado correctamente'
-            );
 
-        } catch (error) {
+        } else {
 
-            console.error(
-                'Error al guardar el objetivo:',
-                error
-            );
+            const perfilPesoObjetivo =
+                document.getElementById('perfilPesoObjetivo');
 
-            alert(
-                'Error al guardar el peso objetivo'
-            );
+            if (perfilPesoObjetivo) {
+                perfilPesoObjetivo.textContent = '-';
+            }
         }
-    });
+
+
+    } catch (error) {
+
+        console.error(
+            'Error al cargar perfil:',
+            error
+        );
+    }
 }
 
 
-// --- INICIALIZACIÓN ---
+// ============================================================
+// BOTÓN GUARDAR OBJETIVO
+// ============================================================
+
+const btnGuardarObj =
+    document.getElementById('btnGuardarObjetivo');
+
+
+if (btnGuardarObj) {
+
+    btnGuardarObj.addEventListener(
+        'click',
+        async () => {
+
+            // ----------------------------------------------------
+            // Obtener input
+            // ----------------------------------------------------
+
+            const inputObjetivo =
+                document.getElementById('inputObjetivo');
+
+
+            const nuevoObjetivo =
+                inputObjetivo
+                    ? Number(inputObjetivo.value)
+                    : null;
+
+
+
+            // ----------------------------------------------------
+            // Validación
+            // ----------------------------------------------------
+
+            if (
+                nuevoObjetivo === null ||
+                !Number.isFinite(nuevoObjetivo) ||
+                nuevoObjetivo <= 0
+            ) {
+
+                alert(
+                    'Por favor, introduce un peso objetivo válido.'
+                );
+
+                return;
+            }
+
+
+            if (nuevoObjetivo > 400) {
+
+                alert(
+                    'El peso objetivo debe ser menor o igual a 400 kg.'
+                );
+
+                return;
+            }
+
+
+            try {
+
+                // ------------------------------------------------
+                // Obtener token CSRF
+                // ------------------------------------------------
+
+
+
+                const token =
+                    await obtenerTokenCSRF();
+
+
+                // ------------------------------------------------
+                // Enviar nuevo objetivo al servidor
+                // ------------------------------------------------
+
+
+
+                const respuesta =
+                    await fetch(
+                        '/api/auth/objetivo',
+                        {
+                            method: 'PUT',
+
+                            headers: {
+                                'Content-Type':
+                                    'application/json',
+
+                                'X-XSRF-TOKEN':
+                                token
+                            },
+
+                            body: JSON.stringify({
+                                pesoObjetivo:
+                                nuevoObjetivo
+                            })
+                        }
+                    );
+
+
+
+
+                if (!respuesta.ok) {
+
+                    const errorTexto =
+                        await respuesta.text();
+
+                    console.error(
+                        'Respuesta del servidor:',
+                        errorTexto
+                    );
+
+
+                    throw new Error(
+                        `Error HTTP: ${respuesta.status}`
+                    );
+                }
+
+
+                // ------------------------------------------------
+                // El servidor ha aceptado el cambio
+                // ------------------------------------------------
+
+                pesoObjetivoActual =
+                    nuevoObjetivo;
+
+
+                localStorage.setItem(
+                    'pesoObjetivo',
+                    pesoObjetivoActual
+                );
+
+
+                // ------------------------------------------------
+                // Actualizar input
+                // ------------------------------------------------
+
+                if (inputObjetivo) {
+
+                    inputObjetivo.value =
+                        pesoObjetivoActual;
+                }
+
+
+                // ------------------------------------------------
+                // Actualizar texto del perfil
+                // ------------------------------------------------
+
+                const perfilPesoObjetivo =
+                    document.getElementById(
+                        'perfilPesoObjetivo'
+                    );
+
+
+                if (perfilPesoObjetivo) {
+
+                    perfilPesoObjetivo.textContent =
+                        `${pesoObjetivoActual.toFixed(1)} kg`;
+                }
+
+
+                // ------------------------------------------------
+                // Actualizar barra de progreso
+                // ------------------------------------------------
+
+                if (
+                    typeof cargarProgreso ===
+                    'function'
+                ) {
+
+                    await cargarProgreso();
+                }
+
+                alert(
+                    'Peso objetivo guardado correctamente.'
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    '💥 Error al guardar el objetivo:',
+                    error
+                );
+
+
+                alert(
+                    'Error al guardar el peso objetivo.'
+                );
+            }
+        }
+    );
+
+} else {
+
+    console.error(
+        '❌ No se encontró el botón #btnGuardarObjetivo'
+    );
+}
+
+
+// ============================================================
+// INICIALIZACIÓN DEL PERFIL
+// ============================================================
+
 async function iniciarPerfil() {
 
+    console.log(
+        "🚀 Iniciando perfil..."
+    );
+
     await cargarUsuarioPerfil();
+
 }
 
+
+// Ejecutar perfil
 iniciarPerfil();

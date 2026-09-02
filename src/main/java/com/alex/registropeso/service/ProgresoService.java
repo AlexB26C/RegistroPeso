@@ -43,11 +43,6 @@ public class ProgresoService {
         BigDecimal pesoActual = ultimoRegistro.getPesoKg();
         BigDecimal pesoObjetivo = usuario.getPesoObjetivo();
 
-        System.out.println("===== DATOS PROGRESO =====");
-        System.out.println("Peso inicial: " + pesoInicial);
-        System.out.println("Peso actual: " + pesoActual);
-        System.out.println("Peso objetivo: " + pesoObjetivo);
-        System.out.println("==========================");
 
         if (pesoObjetivo == null) {
             throw new RuntimeException("El usuario no tiene un peso objetivo");
@@ -99,8 +94,6 @@ public class ProgresoService {
         if (progreso.compareTo(cien) > 0) {
             progreso = cien;
         }
-
-        System.out.println("PROGRESO CALCULADO: " + progreso);
 
         return new ProgresoDTO(
                 pesoInicial,

@@ -4,6 +4,8 @@ const pesoKg = document.getElementById('pesoKg');
 const nota = document.getElementById('nota');
 const listaRegistros = document.getElementById('listaRegistros');
 const mensaje = document.getElementById('mensaje');
+const progressBar = document.getElementById('file-progress');
+const progressText = document.getElementById('.progress-text')
 
 let graficaPeso;
 let pesoObjetivoActual = null;
@@ -167,6 +169,7 @@ async function eliminarRegistro(id) {
         });
         if (respuesta.ok) {
             cargarRegistros();
+            cargarProgreso();
         } else {
             console.error('Error al eliminar:', respuesta.status);
             alert('Error al eliminar el registro');
@@ -264,7 +267,33 @@ if (formulario) {
         ponerFechaHoy();
 
         cargarRegistros();
+        cargarProgreso();
     });
+}
+
+async function cargarProgreso() {
+    try {
+        const respuesta = await fetch('/api/progreso');
+
+        if (!respuesta.ok) {
+            console.error('No se pudo obtener el progreso');
+            return;
+        }
+
+        const datos = await respuesta.json();
+
+        const progreso = Number(datos.progreso) || 0;
+
+        if(progressBar) {
+            progressBar.value = progreso;
+        }
+
+        if (progressText) {
+            progressText.textContent = `${Math.round(progreso)}%`
+        }
+    } catch (error) {
+        console.error('Error al cargar el progreso:', error);
+    }
 }
 
 // --- INICIALIZACIÓN ---
@@ -272,6 +301,7 @@ async function iniciarApp() {
     ponerFechaHoy();
     await cargarUsuarioActual();
     await cargarRegistros();
+    await cargarProgreso()
 }
 
 iniciarApp();

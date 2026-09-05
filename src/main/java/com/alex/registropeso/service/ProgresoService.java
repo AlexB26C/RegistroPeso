@@ -29,23 +29,31 @@ public class ProgresoService {
 
         Long usuarioId = usuario.getId();
 
-        RegistroPeso primerRegistro = registroPesoRepository
-                .findFirstByUsuarioIdOrderByFechaAsc(usuarioId)
-                .orElseThrow(() ->
-                        new RuntimeException("No hay registros de peso"));
+        Optional<RegistroPeso> primerRegistroOpt = registroPesoRepository
+                .findFirstByUsuarioIdOrderByFechaAsc(usuarioId);
 
-        RegistroPeso ultimoRegistro = registroPesoRepository
-                .findFirstByUsuarioIdOrderByFechaDescIdDesc(usuarioId)
-                .orElseThrow(() ->
-                        new RuntimeException("No hay registros de peso"));
+        Optional<RegistroPeso> ultimoRegistroOpt = registroPesoRepository
+                .findFirstByUsuarioIdOrderByFechaDescIdDesc(usuarioId);
 
-        BigDecimal pesoInicial = primerRegistro.getPesoKg();
-        BigDecimal pesoActual = ultimoRegistro.getPesoKg();
         BigDecimal pesoObjetivo = usuario.getPesoObjetivo();
 
+        if (primerRegistroOpt.isEmpty() || ultimoRegistroOpt.isEmpty()) {
+            return new ProgresoDTO(
+                    null,
+                    null,
+                    pesoObjetivo,
+                    BigDecimal.ZERO);
+        }
+
+        BigDecimal pesoInicial = primerRegistroOpt.get().getPesoKg();
+        BigDecimal pesoActual = ultimoRegistroOpt.get().getPesoKg();
 
         if (pesoObjetivo == null) {
-            throw new RuntimeException("El usuario no tiene un peso objetivo");
+            return new ProgresoDTO(
+                    pesoInicial,
+                    pesoActual,
+                    null,
+                    BigDecimal.ZERO);
         }
 
         BigDecimal progreso;
@@ -99,7 +107,6 @@ public class ProgresoService {
                 pesoInicial,
                 pesoActual,
                 pesoObjetivo,
-                progreso
-        );
+                progreso);
     }
 }

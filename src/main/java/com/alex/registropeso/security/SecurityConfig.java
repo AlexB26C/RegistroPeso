@@ -34,6 +34,8 @@ public class SecurityConfig {
                                          "/styleLogReg.css",
                                          "/auth.js",
                                          "/Gimnasio.jpg",
+                                         "/fondo.jpeg",
+                                         "/FotoNav.png",
                                          "/app.js",
                                          "/manifest.json",
                                          "/icono-192.png",

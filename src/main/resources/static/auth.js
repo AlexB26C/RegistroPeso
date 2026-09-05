@@ -1,27 +1,50 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
+    const mensajeError = document.getElementById('mensajeError');
+    const mensajeLogout = document.getElementById('mensajeLogout');
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const respuestaCsrf = await fetch('/api/auth/csrf');
+            try {
+                const respuestaCsrf = await fetch('/api/auth/csrf');
+                const csrf = await respuestaCsrf.json();
 
-            const csrf = await respuestaCsrf.json();
+                const datosLogin = new URLSearchParams();
+                datosLogin.append('username', loginForm.elements.username.value);
+                datosLogin.append('password', loginForm.elements.password.value);
+                datosLogin.append(csrf.parameterName, csrf.token);
 
-            const datosLogin = new URLSearchParams();
+                const respuestaLogin = await fetch('/login', {
+                    method: 'POST',
+                    body: datosLogin
+                });
 
-            datosLogin.append('username', loginForm.elements.username.value);
-            datosLogin.append('password', loginForm.elements.password.value);
-            datosLogin.append(csrf.parameterName, csrf.token);
+                if (respuestaLogin.redirected && respuestaLogin.url.includes('error=true')) {
+                    if (mensajeError) {
+                        mensajeError.style.display = 'block';
+                    }
+                    if (mensajeLogout) {
+                        mensajeLogout.style.display = 'none';
+                    }
+                    return;
+                }
 
-            const respuestaLogin = await fetch('/login', {
-                method: 'POST',
-                body: datosLogin
-            });
+                if (!respuestaLogin.ok) {
+                    if (mensajeError) {
+                        mensajeError.style.display = 'block';
+                    }
+                    return;
+                }
 
-            window.location.href = '/index.html';
-
+                window.location.href = '/index.html';
+            } catch (error) {
+                console.error('Error al iniciar sesión:', error);
+                if (mensajeError) {
+                    mensajeError.style.display = 'block';
+                }
+            }
         });
     }
 
@@ -93,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = '/login.html?logout';
                 }
 
-                if (!respuestaLogout.ok){
+                if (!respuestaLogout.ok) {
                     console.error('Error al cerrar sesión:', respuestaLogout.status);
                 }
 
@@ -104,8 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const params = new URLSearchParams(window.location.search);
-    const mensajeError = document.getElementById('mensajeError');
-    const mensajeLogout = document.getElementById('mensajeLogout');
 
     if (params.has('error') && mensajeError) {
         mensajeError.style.display = 'block';

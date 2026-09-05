@@ -13,6 +13,7 @@ public interface RegistroPesoRepository extends JpaRepository<RegistroPeso, Long
 
     Optional<RegistroPeso> findFirstByUsuarioIdOrderByFechaDescIdDesc(Long usuarioId);
 
+    Optional<RegistroPeso> findByIdAndUsuarioId(Long id, Long usuarioId);
 }
 
 

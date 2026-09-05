@@ -42,39 +42,30 @@ public class RegistroPesoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarRegistro(@PathVariable Long id, Authentication authentication){
-        Optional<RegistroPeso> registroOpt = registroPesoRepository.findById(id);
+    public ResponseEntity<?> eliminarRegistro(@PathVariable Long id, Authentication authentication) {
+        Usuario usuario = obtenerUsuarioAutenticado(authentication);
+        Optional<RegistroPeso> registroOpt = registroPesoRepository.findByIdAndUsuarioId(id, usuario.getId());
 
-        if (registroOpt.isEmpty()){
+        if (registroOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        RegistroPeso registro = registroOpt.get();
-
-        if (!registro.getUsuario().getUsername().equals(authentication.getName())){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permisos para eliminar este registro");
-        }
-
-        registroPesoRepository.delete(registro);
+        registroPesoRepository.delete(registroOpt.get());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarRegistro(@PathVariable Long id,
-                                                @Valid @RequestBody RegistroPeso datosActualizados,
-                                                Authentication authentication) {
-        Optional<RegistroPeso> registroOpt = registroPesoRepository.findById(id);
+            @Valid @RequestBody RegistroPeso datosActualizados,
+            Authentication authentication) {
+        Usuario usuario = obtenerUsuarioAutenticado(authentication);
+        Optional<RegistroPeso> registroOpt = registroPesoRepository.findByIdAndUsuarioId(id, usuario.getId());
 
         if (registroOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         RegistroPeso registro = registroOpt.get();
-
-        if (!registro.getUsuario().getUsername().equals(authentication.getName())){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para editar este registro");
-        }
-
         registro.setFecha(datosActualizados.getFecha());
         registro.setPesoKg(datosActualizados.getPesoKg());
         registro.setNota(datosActualizados.getNota());
@@ -83,11 +74,10 @@ public class RegistroPesoController {
         return ResponseEntity.ok().build();
     }
 
-    private Usuario obtenerUsuarioAutenticado(Authentication authentication){
+    private Usuario obtenerUsuarioAutenticado(Authentication authentication) {
         String username = authentication.getName();
         return usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado en la base de datos"));
     }
-
 
 }

@@ -68,7 +68,10 @@ public class AuthController {
         usuario.setPesoObjetivo(request.getPesoObjetivo());
         usuarioRepository.save(usuario);
 
-        return ResponseEntity.ok(usuario);
+        Map<String, Object> respuesta = new java.util.HashMap<>();
+        respuesta.put("mensaje", "Peso objetivo actualizado con éxito");
+        respuesta.put("pesoObjetivo", usuario.getPesoObjetivo());
+        return ResponseEntity.ok(respuesta);
     }
 
     @PutMapping("/altura")
@@ -85,6 +88,9 @@ public class AuthController {
         usuario.setAlturaCm(request.getAlturaCm());
         usuarioRepository.save(usuario);
 
-        return ResponseEntity.ok(usuario);
+        Map<String, Object> respuesta = new java.util.HashMap<>();
+        respuesta.put("mensaje", "Altura actualizada con éxito");
+        respuesta.put("alturaCm", usuario.getAlturaCm());
+        return ResponseEntity.ok(respuesta);
     }
 }

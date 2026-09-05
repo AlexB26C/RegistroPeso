@@ -8,7 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name= "registros_peso")
+@Table(name = "registros_peso", indexes = {
+    @Index(name = "idx_usuario_fecha", columnList = "usuario_id, fecha DESC")
+})
 public class RegistroPeso {
 
     @Id

@@ -39,6 +39,11 @@ async function cargarUsuarioPerfil() {
             if (inputAltura) {
                 inputAltura.value = usuario.alturaCm;
             }
+
+            const perfilAltura = document.getElementById('perfilAltura');
+            if (perfilAltura) {
+                perfilAltura.textContent = `${usuario.alturaCm} cm`;
+            }
         }
 
 
@@ -363,6 +368,11 @@ if (btnGuardarAltura) {
                 }
 
                 alturaActual = nuevaAltura;
+
+                const perfilAltura = document.getElementById('perfilAltura');
+                if (perfilAltura) {
+                    perfilAltura.textContent = `${alturaActual} cm`;
+                }
 
                 if(typeof actualizarGraficaIMC === 'function') {
                     await actualizarGraficaIMC();

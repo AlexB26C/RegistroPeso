@@ -415,6 +415,10 @@ async function cargarUsuarioActual() {
             const valorAltura = usuario.alturaCm ?? usuario.altura_cm;
             if (valorAltura !== null && valorAltura !== undefined && valorAltura !== '') {
                 alturaActual = Number(valorAltura);
+                const perfilAltura = document.getElementById('perfilAltura');
+                if (perfilAltura) {
+                    perfilAltura.textContent = `${alturaActual} cm`;
+                }
             }
         }
     } catch (error) {
@@ -470,7 +474,7 @@ function prepararEdicion(id, fechaVal, pesoVal, notaVal) {
     pesoKg.value = pesoVal;
     nota.value = notaVal;
 
-    const btnGuardar = formulario.querySelector('button[type="submit"]');
+    const btnGuardar = formulario.querySelector('button[type=\"submit\"]');
     btnGuardar.textContent = 'Actualizar peso';
     btnGuardar.style.backgroundColor = '#eab308';
 }
@@ -498,8 +502,8 @@ async function cargarRegistros() {
                     <td>${Number(registro.pesoKg).toFixed(1)}</td>
                     <td>${registro.nota || '-'}</td>
                     <td>
-                        <button class="btn-accion btn-editar" onclick="prepararEdicion(${registro.id}, '${registro.fecha}', ${registro.pesoKg}, '${registro.nota || ''}')">✏️</button>
-                        <button class="btn-accion btn-eliminar" onclick="eliminarRegistro(${registro.id})">🗑️</button>
+                        <button class=\"btn-accion btn-editar\" onclick=\"prepararEdicion(${registro.id}, '${registro.fecha}', ${registro.pesoKg}, '${registro.nota || ''}')\">✏️</button>
+                        <button class=\"btn-accion btn-eliminar\" onclick=\"eliminarRegistro(${registro.id})\">🗑️</button>
                     </td>
                 `;
 
@@ -545,6 +549,11 @@ function actualizarResumenDashboard(registros) {
     const variacionEl = document.getElementById('perfilVariacion');
     const mediaEl = document.getElementById('perfilMedia');
     const objetivoEl = document.getElementById('perfilPesoObjetivo');
+    const alturaEl = document.getElementById('perfilAltura');
+
+    if (alturaEl) {
+        alturaEl.textContent = (alturaActual && isFinite(alturaActual) && alturaActual > 0) ? `${alturaActual} cm` : '-';
+    }
 
     if (!registros || registros.length === 0) {
         if (pesoActualEl) pesoActualEl.textContent = '-';
@@ -597,7 +606,7 @@ if (formulario) {
 
         const respuesta = await fetch(url, {
             method: metodo,
-            headers: { "Content-Type": "application/json", "X-XSRF-TOKEN": token },
+            headers: { \"Content-Type\": \"application/json\", \"X-XSRF-TOKEN\": token },
             body: JSON.stringify(datosRegistro)
         });
 
@@ -607,7 +616,7 @@ if (formulario) {
         }
 
         idEdicion = null;
-        const btnGuardar = formulario.querySelector('button[type="submit"]');
+        const btnGuardar = formulario.querySelector('button[type=\"submit\"]');
         btnGuardar.textContent = 'Guardar peso';
         btnGuardar.style.backgroundColor = '';
 
@@ -634,7 +643,7 @@ async function cargarProgreso() {
         progressText.textContent = Math.round(progreso) + '%';
 
     } catch (error) {
-        console.error("ERROR PROGRESO:", error);
+        console.error(\"ERROR PROGRESO:\", error);
     }
 }
 

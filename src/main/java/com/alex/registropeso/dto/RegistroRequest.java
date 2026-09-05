@@ -9,7 +9,7 @@ public class RegistroRequest {
     private String username;
 
     @NotBlank(message = "La contraseña no puede estar vacía")
-    @Size(min = 4, message = "La contraseña debe tener al menos 4 caracteres")
+    @Size(min = 8, max = 100, message = "La contraseña debe tener entre 8 y 100 caracteres")
     private String password;
 
     public RegistroRequest(){}
